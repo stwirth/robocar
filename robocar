@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import argparse
+import robocar
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='RoboCar controller')
+    parser.add_argument('--self-test', action='store_true')
+
+    args = parser.parse_args()
+
+    if args.self_test:
+        robocar = robocar.Robocar()
+        robocar.self_test()

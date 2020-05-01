@@ -21,7 +21,8 @@ class Robocar:
     def horn_off(self):
         self._horn.off()
 
-    def test_motors(self):
+    def self_test(self):
+        self.honk()
         motors = [self._motor_front_left, self._motor_front_right,\
                 self._motor_back_right, self._motor_back_left]
         for motor in motors:
@@ -33,6 +34,7 @@ class Robocar:
             time.sleep(0.1)
             motor.stop()
             time.sleep(0.1)
+        self.honk()
 
     def set_motor_speed(self, motor, speed):
         if abs(speed) > 1.0:
@@ -47,11 +49,4 @@ class Robocar:
         self.set_motor_speed(self._motor_front_right, linear)
         self.set_motor_speed(self._motor_back_left, linear)
         self.set_motor_speed(self._motor_back_right, linear)
-
-
-robocar = Robocar()
-robocar.honk()
-robocar.set_speed(1.0, 0.0)
-time.sleep(1.0)
-robocar.set_speed(0.0, 0.0)
 
