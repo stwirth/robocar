@@ -1,5 +1,6 @@
 import gpiozero
 import time
+import math
 
 
 class Robocar:
@@ -39,14 +40,20 @@ class Robocar:
     def set_motor_speed(self, motor, speed):
         if abs(speed) > 1.0:
             speed = math.copysign(1.0, speed)
+        min_speed = 0.4
+        if abs(speed) < min_speed:
+            speed = 0.0
         if speed > 0:
             motor.forward(speed)
         else:
-            motor.backward(speed)
+            motor.backward(-speed)
 
     def set_speed(self, linear, angular):
-        self.set_motor_speed(self._motor_front_left, linear)
-        self.set_motor_speed(self._motor_front_right, linear)
-        self.set_motor_speed(self._motor_back_left, linear)
-        self.set_motor_speed(self._motor_back_right, linear)
+        wheel_base = 2.0
+        left_speed = linear + 0.5 * wheel_base * angular
+        right_speed = linear - 0.5 * wheel_base * angular
+        self.set_motor_speed(self._motor_front_left, left_speed)
+        self.set_motor_speed(self._motor_back_left, left_speed)
+        self.set_motor_speed(self._motor_front_right, right_speed)
+        self.set_motor_speed(self._motor_back_right, right_speed)
 

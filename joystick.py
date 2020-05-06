@@ -33,6 +33,7 @@ class Joystick():
                 evdev.ecodes.ABS_RZ,
                 ]
         self._button_codes = [
+                evdev.ecodes.BTN_SOUTH
                 ]
 
     def is_connected(self):
@@ -54,7 +55,8 @@ class Joystick():
 
     def update_state(self, event):
         if event.type == evdev.ecodes.EV_KEY:
-            pass
+            if event.code in self._button_codes:
+                self._buttons[self._button_codes.index(event.code)] = event.value
         if event.type == evdev.ecodes.EV_ABS:
             if event.code in self._axes_codes:
                 self._axes[self._axes_codes.index(event.code)] = scale_stick(event.value)

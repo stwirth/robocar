@@ -2,6 +2,9 @@
 
 import argparse
 import robocar
+import joystick
+import asyncio
+import time
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='RoboCar controller')
@@ -9,6 +12,31 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    robocar = robocar.Robocar()
+
     if args.self_test:
-        robocar = robocar.Robocar()
         robocar.self_test()
+
+
+    def joy_cb(buttons, axes):
+        linear = axes[1] / 100.0
+        angular = axes[3] / 100.0
+        robocar.set_speed(linear, angular)
+        if buttons[0] == 1:
+            robocar.horn_on()
+        else:
+            robocar.horn_off()
+
+
+    try:
+        joy = joystick.Joystick()
+        while True:
+            if not joy.is_connected():
+                time.sleep(1)
+                joy.connect()
+            else:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(joy.listen(joy_cb))
+    except KeyboardInterrupt:
+        pass
+
