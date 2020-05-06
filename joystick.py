@@ -22,6 +22,18 @@ def scale_stick(value):
 class Joystick():
     def __init__(self):
         self._device = None
+        self._axes = [0] * 6
+        self._buttons = [0] * 17
+        self._axes_codes = [
+                evdev.ecodes.ABS_X,
+                evdev.ecodes.ABS_Y,
+                evdev.ecodes.ABS_Z,
+                evdev.ecodes.ABS_RX,
+                evdev.ecodes.ABS_RY,
+                evdev.ecodes.ABS_RZ,
+                ]
+        self._button_codes = [
+                ]
 
     def is_connected(self):
         return self._device is not None
@@ -33,19 +45,31 @@ class Joystick():
         for device in all_devices:
             print(device.name)
             if device.name == 'Sony PLAYSTATION(R)3 Controller':
-                self._device = evdev.InputDevice(device.fn)
+                self._device = evdev.InputDevice(device.path)
                 break
         return self._device is not None
 
+    def get_state(self):
+        return self._buttons, self._axes
+
+    def update_state(self, event):
+        if event.type == evdev.ecodes.EV_KEY:
+            pass
+        if event.type == evdev.ecodes.EV_ABS:
+            if event.code in self._axes_codes:
+                self._axes[self._axes_codes.index(event.code)] = scale_stick(event.value)
+
     async def listen(self, cb):
         async for ev in self._device.async_read_loop():
-            cb(ev)
+            self.update_state(ev)
+            buttons, axes = self.get_state()
+            cb(buttons, axes)
 
 
 if __name__ == '__main__':
 
-    def cb(event):
-        print(evdev.categorize(event))
+    def cb(buttons, axes):
+        print('buttons: ', buttons, ' axes: ', axes)
 
     try:
         joy = Joystick()
