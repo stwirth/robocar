@@ -5,10 +5,8 @@ import math
 
 class Robocar:
     def __init__(self):
-        self._motor_front_left = gpiozero.Motor(forward=6, backward=5)
-        self._motor_front_right = gpiozero.Motor(forward=12, backward=13)
-        self._motor_back_left = gpiozero.Motor(forward=16, backward=19)
-        self._motor_back_right = gpiozero.Motor(forward=20, backward=26)
+        self._motor_right = gpiozero.Motor(forward=12, backward=13)
+        self._motor_left = gpiozero.Motor(forward=5, backward=6)
         self._horn = gpiozero.LED(4)
 
     def honk(self):
@@ -24,15 +22,18 @@ class Robocar:
 
     def self_test(self):
         self.honk()
-        motors = [self._motor_front_left, self._motor_front_right,\
-                self._motor_back_right, self._motor_back_left]
+        motors = [self._motor_left, self._motor_right]
         for motor in motors:
+            print('forward')
             motor.forward()
-            time.sleep(0.1)
+            time.sleep(0.5)
+            print('stop')
             motor.stop()
-            time.sleep(0.1)
+            time.sleep(0.5)
+            print('backward')
             motor.backward()
-            time.sleep(0.1)
+            time.sleep(0.5)
+            print('stop')
             motor.stop()
             time.sleep(0.1)
         self.honk()
@@ -52,8 +53,6 @@ class Robocar:
         wheel_base = 2.0
         left_speed = linear + 0.5 * wheel_base * angular
         right_speed = linear - 0.5 * wheel_base * angular
-        self.set_motor_speed(self._motor_front_left, left_speed)
-        self.set_motor_speed(self._motor_back_left, left_speed)
-        self.set_motor_speed(self._motor_front_right, right_speed)
-        self.set_motor_speed(self._motor_back_right, right_speed)
+        self.set_motor_speed(self._motor_left, left_speed)
+        self.set_motor_speed(self._motor_right, right_speed)
 

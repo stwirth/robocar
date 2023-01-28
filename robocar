@@ -5,6 +5,7 @@ import robocar
 import joystick
 import asyncio
 import time
+import sys
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='RoboCar controller')
@@ -12,14 +13,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    print('Instantiating robocar')
     robocar = robocar.Robocar()
 
     if args.self_test:
+        print('Running self-test')
         robocar.self_test()
-
+        sys.exit(0)
 
     def joy_cb(buttons, axes):
-        linear = axes[1] / 100.0
+        linear = -axes[1] / 100.0
         angular = axes[3] / 100.0
         robocar.set_speed(linear, angular)
         if buttons[0] == 1:
@@ -29,12 +32,15 @@ if __name__ == '__main__':
 
 
     try:
+        print('Instantiating joystick')
         joy = joystick.Joystick()
         while True:
             if not joy.is_connected():
+                print('Trying to connect joystick')
                 time.sleep(1)
                 joy.connect()
             else:
+                print('Entering event loop')
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(joy.listen(joy_cb))
     except KeyboardInterrupt:
